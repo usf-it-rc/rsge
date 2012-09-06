@@ -1,0 +1,72 @@
+#!/usr/bin/ruby
+
+require 'lib/rsgejobs'
+require 'lib/rsgehost'
+require 'lib/rsgequeues'
+
+job    = Rsgejobs.new
+gh     = Rsgehost.new("global")
+queues = Rsgequeues.new
+
+queues.set_queue("default")
+
+totalSlots =  queues.total
+
+jobList = job.list
+
+xlong = 0
+xlongSlots = 0
+xlongAvail = gh.complex_value(:xlong).to_i
+long = 0
+longSlots = 0
+longAvail = gh.complex_value(:long).to_i
+medium = 0
+mediumSlots = 0
+mediumAvail = gh.complex_value(:medium).to_i
+short = 0
+shortSlots = 0
+shortAvail = gh.complex_value(:short).to_i
+
+jobList.each do |jobid|
+    job.set_jobid(jobid)
+    hr = job.hard_request_list
+    sr = job.soft_request_list
+
+    if (job.state == "r")
+        if hr.include?('xlong')
+            xlong = xlong+1
+            xlongSlots += job.slots.to_i
+            xlongAvail -= job.slots.to_i
+        end
+        if hr.include?('long')
+            long = long+1
+            longSlots += job.slots.to_i
+            longAvail -= job.slots.to_i
+        end
+        if hr.include?('medium')
+            medium = medium+1
+            mediumSlots += job.slots.to_i
+            mediumAvail -= job.slots.to_i
+        end
+        if hr.include?('short')
+            short = short+1
+            shortSlots += job.slots.to_i
+            shortAvail -= job.slots.to_i
+        end
+    end
+end
+
+totalUsed = xlongSlots + longSlots + mediumSlots + shortSlots
+totalAvail = totalSlots.to_i - totalUsed
+
+xlongAvail = xlongAvail <= totalAvail ? xlongAvail : totalAvail
+longAvail  = longAvail <= totalAvail ? longAvail : totalAvail
+mediumAvail = mediumAvail <= totalAvail ? mediumAvail : totalAvail
+shortAvail = shortAvail <= totalAvail ? shortAvail : totalAvail
+
+printf("%-15s %6s %6s  %10s  %10s\n", "JOB CLASS", "AVAIL", "JOBS", "SLOTS USED", "SLOT LIMIT")
+puts "-----------------------------------------------------"
+printf("%-15s %6s %6s  %10s  %10s\n", "xlong", xlongAvail.to_s, xlong.to_s, xlongSlots.to_s, gh.complex_value(:xlong).to_s)
+printf("%-15s %6s %6s  %10s  %10s\n", "long", longAvail.to_s, long.to_s, longSlots.to_s, gh.complex_value(:long).to_s)
+printf("%-15s %6s %6s  %10s  %10s\n", "medium", mediumAvail.to_s, medium.to_s, mediumSlots.to_s, gh.complex_value(:medium).to_s)
+printf("%-15s %6s %6s  %10s  %10s\n", "short", shortAvail.to_s, short.to_s, shortSlots.to_s, gh.complex_value(:short).to_s)
