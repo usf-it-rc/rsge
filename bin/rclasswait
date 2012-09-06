@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+require 'lib/rsgejobs'
+require 'lib/rsgehost'
+require 'lib/rsgequeues'
+require 'time'
+require 'date'
+
+job    = Rsgejobs.new
+
+jobList = job.list
+
+xlong = 0
+xlongSubmitTotal = 0
+long = 0
+longSubmitTotal = 0
+medium = 0
+mediumSubmitTotal = 0
+short = 0
+shortSubmitTotal = 0
+
+now = Time.now.to_i
+
+jobList.each do |jobid|
+    job.set_jobid(jobid)
+    hr = job.hard_request_list
+
+    if (job.state == "qw")
+        if hr.include?('xlong')
+            xlong = xlong+1
+            xlongSubmitTotal += now.to_i - job.subTime.to_i
+        end
+        if hr.include?('long')
+            long = long+1
+            longSubmitTotal += now.to_i - job.subTime.to_i
+        end
+        if hr.include?('medium')
+            medium = medium+1
+            mediumSubmitTotal += now.to_i - job.subTime.to_i
+        end
+        if hr.include?('short')
+            short = short+1
+            shortSubmitTotal += now.to_i - job.subTime.to_i
+        end
+    end
+end
+
+printf("%-15s %6s\n", "JOB CLASS", "AVG WAIT")
+puts "------------------------"
+printf("%-15s %6.2fh\n", "xlong", (xlongSubmitTotal/xlong).to_f/3600.to_f)
+printf("%-15s %6.2fh\n", "long", (longSubmitTotal/long).to_f/3600.to_f)
+printf("%-15s %6.2fh\n", "medium", (mediumSubmitTotal/medium).to_f/3600.to_f)
+printf("%-15s %6.2fh\n", "short", (shortSubmitTotal/short).to_f/3600.to_f)

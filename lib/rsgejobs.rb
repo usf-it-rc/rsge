@@ -30,7 +30,8 @@ class Rsgejobs < Rsgereq
                 @@jobsHr[@jobNumber] = Hash.new
                 @@jobsSr[@jobNumber] = Hash.new
 
-                @@jobs[@jobNumber][:submission_time] = _time_conv(node.at_xpath(".//JAT_start_time").to_s)
+                @@jobs[@jobNumber][:submission_time] = Time.parse(node.at_xpath(".//JB_submission_time").to_s)
+                @@jobs[@jobNumber][:start_time] = Time.parse(node.at_xpath(".//JAT_start_time").to_s)
                 @@jobs[@jobNumber][:job_owner] = node.at_xpath(".//JB_owner").text.to_s
                 @@jobs[@jobNumber][:qname] = node.at_xpath(".//queue_name").text.to_s
                 @@jobs[@jobNumber][:hqueue] = node.at_xpath(".//hard_req_queue").to_s
@@ -70,6 +71,10 @@ class Rsgejobs < Rsgereq
         @@jobs[@jobid][:submission_time]
     end 
 
+    def startTime
+        @@jobs[@jobid][:start_time]
+    end 
+
     def queue_name
         @@jobs[@jobd][:qname]
     end
@@ -103,10 +108,4 @@ class Rsgejobs < Rsgereq
         @@jobsSr[@jobid][cplx]
     end 
 
-    def _time_conv(dateString)
-        date = Time.parse(dateString)
-        date.to_i
-    end
-
-    private :_time_conv
 end
