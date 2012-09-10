@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+require 'rsgejobs'
+
+job = Rsgejobs.new
+jobList = job.list
+
+xlong = 0
+long = 0
+medium = 0
+short = 0
+
+if (ARGV[0] != nil)
+    classes = [ ARGV[0] ]
+else
+    classes = ["short","medium","long","xlong"]
+end
+
+counts = Hash.new
+
+classes.each do |myclass|
+    counts[myclass.to_sym] = 0
+end
+
+jobList.each do |jobid|
+    job.set_jobid(jobid)
+
+    hr = job.hard_request_list
+
+    hr.each do |cplx| 
+        if (job.state == "qw")
+            if (classes.include? cplx)
+                printf("%10s %3s %6s %16s %10s\n", jobid, job.state, job.slots, job.owner, cplx)
+                counts[cplx.to_sym] += 1
+            end
+        end
+    end
+end
+
+puts
+puts "    xlong = " + counts[:xlong].to_s + "  long = " + counts[:long].to_s + "  medium = " + counts[:medium].to_s + "  short = " + counts[:short].to_s 
+puts

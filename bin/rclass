@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
 
-require 'lib/rsgejobs'
-require 'lib/rsgehost'
-require 'lib/rsgequeues'
+require 'rsgejobs'
+require 'rsgehost'
+require 'rsgequeues'
 
 job    = Rsgejobs.new
 gh     = Rsgehost.new("global")

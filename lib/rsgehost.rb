@@ -1,4 +1,4 @@
-require 'lib/rsgereq'
+require 'rsgereq'
 include REXML
 
 class Rsgehost

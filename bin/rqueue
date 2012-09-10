@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require 'lib/rsgequeues'
+require 'rsgequeues'
 
 queues = Rsgequeues.new
 

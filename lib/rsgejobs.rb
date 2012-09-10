@@ -1,4 +1,4 @@
-require 'lib/rsgereq'
+require 'rsgereq'
 require 'time'
 require 'rexml/document'
 require 'nokogiri'
@@ -43,7 +43,7 @@ class Rsgejobs < Rsgereq
                 end
 
                 doc.xpath(node.path + "/soft_request").each do |sr|
-                    @@jobsHr[@jobNumber][sr.attribute("name").to_s] = Rsgereq.new(@@complexList[sr.attribute("name").to_s], sr.text)
+                    @@jobsSr[@jobNumber][sr.attribute("name").to_s] = Rsgereq.new(@@complexList[sr.attribute("name").to_s], sr.text)
                 end
 
             end
@@ -100,7 +100,6 @@ class Rsgejobs < Rsgereq
     end 
    
     def soft_request_list
-        puts @@jobsSr[@jobid].keys.sort
         @@jobsSr[@jobid].keys.sort
     end 
 
