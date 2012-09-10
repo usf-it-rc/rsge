@@ -30,6 +30,7 @@ class Rsgejobs < Rsgereq
                 @@jobsHr[@jobNumber] = Hash.new
                 @@jobsSr[@jobNumber] = Hash.new
 
+                @@jobs[@jobNumber][:jobid] = @jobNumber
                 @@jobs[@jobNumber][:submission_time] = Time.parse(node.at_xpath(".//JB_submission_time").to_s)
                 @@jobs[@jobNumber][:start_time] = Time.parse(node.at_xpath(".//JAT_start_time").to_s)
                 @@jobs[@jobNumber][:job_owner] = node.at_xpath(".//JB_owner").text.to_s
@@ -51,6 +52,12 @@ class Rsgejobs < Rsgereq
     end
 
     # Accessor methods
+    def each
+        self.list.each do |jobid|
+            yield Rsgejob.new(jobid)
+        end
+    end
+
     def list
         @@jobs.keys.sort
     end

@@ -1,24 +1,22 @@
 #!/usr/bin/ruby
 
-require 'rsgejobs'
+require 'rsgejob'
 
-job = Rsgejobs.new
-jobList = job.list
+jobs = Rsgejobs.new
 
 xlong = 0
 long = 0
 medium = 0
 short = 0
 
-jobList.each do |jobid|
-    job.set_jobid(jobid)
-    if (jobid != ARGV[0] && ARGV[0] != nil)
+jobs.each do |job|
+    if (job.jobid != ARGV[0] && ARGV[0] != nil)
         next
     end
     hr = job.hard_request_list
     sr = job.soft_request_list
 
-    printf("\033[36m%10s\033[0m %3s %6s %16s => ", jobid, job.state, job.slots, job.owner)
+    printf("\033[36m%10s\033[0m %3s %6s %16s => ", job.jobid, job.state, job.slots, job.owner)
 
     hr.each do |cplx| 
         print "\033[31m" + cplx + "="

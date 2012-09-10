@@ -1,18 +1,16 @@
 #!/usr/bin/ruby
 
-require 'rsgejobs'
+require 'rsgejob'
 require 'rsgehost'
 require 'rsgequeues'
 
-job    = Rsgejobs.new
+jobs   = Rsgejobs.new
 gh     = Rsgehost.new("global")
 queues = Rsgequeues.new
 
 queues.set_queue("default")
 
 totalSlots =  queues.total
-
-jobList = job.list
 
 xlong = 0
 xlongSlots = 0
@@ -27,8 +25,7 @@ short = 0
 shortSlots = 0
 shortAvail = gh.complex_value(:short).to_i
 
-jobList.each do |jobid|
-    job.set_jobid(jobid)
+jobs.each do |job|
     hr = job.hard_request_list
     sr = job.soft_request_list
 

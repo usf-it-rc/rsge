@@ -1,13 +1,12 @@
 #!/usr/bin/ruby
 
-require 'rsgejobs'
+require 'rsgejob'
 require 'rsgehost'
 require 'rsgequeues'
 require 'time'
 require 'date'
 
-job     = Rsgejobs.new
-jobList = job.list
+jobs    = Rsgejobs.new
 
 xlong = 0
 xlongSubmitTotal = 0
@@ -20,8 +19,7 @@ shortSubmitTotal = 0
 
 now = Time.now.to_i
 
-jobList.each do |jobid|
-    job.set_jobid(jobid)
+jobs.each do |job|
     hr = job.hard_request_list
 
     if (job.state == "qw")

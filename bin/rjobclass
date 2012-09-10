@@ -1,9 +1,8 @@
 #!/usr/bin/ruby
 
-require 'rsgejobs'
+require 'rsgejob'
 
-job = Rsgejobs.new
-jobList = job.list
+jobs = Rsgejobs.new
 
 xlong = 0
 long = 0
@@ -22,14 +21,13 @@ classes.each do |myclass|
     counts[myclass.to_sym] = 0
 end
 
-jobList.each do |jobid|
-    job.set_jobid(jobid)
+jobs.each do |job|
 
     hr = job.hard_request_list
 
     hr.each do |cplx| 
         if (classes.include? cplx)
-            printf("%10s %3s %6s %16s %10s\n", jobid, job.state, job.slots, job.owner, cplx)
+            printf("%10s %3s %6s %16s %10s\n", job.jobid, job.state, job.slots, job.owner, cplx)
             counts[cplx.to_sym] += 1
         end
     end
