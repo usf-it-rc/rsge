@@ -1,12 +1,11 @@
 require 'time'
 require 'rexml/document'
 require 'nokogiri'
+require 'rsgequeue'
 
 class Rsgequeues
-
     def initialize
         if (!defined?(@@queues) || !defined?(@@hosts))
-            #@@doc = Document.new(open("|qstat -g c -ext -xml").read)
             doc = Nokogiri::XML(open("|qstat -g c -ext -xml"))
             @@queues = Hash.new
             
@@ -31,8 +30,8 @@ class Rsgequeues
     end
 
     def each
-        self.list.each do |jobid|
-            yield Rsgequeue.new(jobid)
+        self.list.each do |queue|
+            yield Rsgequeue.new(queue)
         end
     end
 end

@@ -4,14 +4,14 @@ require 'rsgejob'
 require 'rsgehost'
 require 'rsgequeue'
 
-jobs   = Rsgejobs.new
-gh     = Rsgehost.new("global")
-queues = Rsgequeues.new
+jobs       = Rsgejobs.new
+gh         = Rsgehost.new("global")
+queues     = Rsgequeues.new
 totalSlots = 0
 
 queues.each do |queue|
     if (queue.name == "default")
-        totalSlots =  queue.total
+        totalSlots = queue.total
     end
 end
 
