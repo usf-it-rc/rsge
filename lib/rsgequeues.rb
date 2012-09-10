@@ -5,7 +5,7 @@ require 'rsgequeue'
 
 class Rsgequeues
     def initialize
-        if (!defined?(@@queues) || !defined?(@@hosts))
+        if (!defined?(@@queues))
             doc = Nokogiri::XML(open("|qstat -g c -ext -xml"))
             @@queues = Hash.new
             
