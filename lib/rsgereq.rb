@@ -1,8 +1,16 @@
 class Rsgereq
-    def initialize(type, value)
+    def initialize(param, value)
+
+        if (!defined?(@@complexList))
+            @@complexList = Hash.new
+            open("|qconf -sc").read.each_line do |line|
+                @@complexList[(line.to_s.split)[0]] = (line.to_s.split)[2]
+            end 
+        end
+    
         @value = value
-        @type = type
-        case type
+
+        case @@complexList[param]
          when "MEMORY"
             @value = _mem_convert
          when "STRING"

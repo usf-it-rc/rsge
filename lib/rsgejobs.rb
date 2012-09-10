@@ -7,13 +7,6 @@ include REXML
 class Rsgejobs < Rsgereq
 
     def initialize
-        if (!defined?(@@complexList))
-            @@complexList = Hash.new
-            open("|qconf -sc").read.each_line do |line|
-                @@complexList[(line.to_s.split)[0]] = (line.to_s.split)[2]
-            end
-        end
-
         if (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
             doc = doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
             @@jobs = Hash.new
@@ -40,11 +33,11 @@ class Rsgejobs < Rsgereq
                 @@jobs[@jobNumber][:slots] = node.at_xpath(".//slots").text.to_s
  
                 doc.xpath(node.path + "/hard_request").each do |hr|
-                    @@jobsHr[@jobNumber][hr.attribute("name").to_s] = Rsgereq.new(@@complexList[hr.attribute("name").to_s], hr.text)
+                    @@jobsHr[@jobNumber][hr.attribute("name").to_s] = Rsgereq.new(hr.attribute("name").to_s, hr.text)
                 end
 
                 doc.xpath(node.path + "/soft_request").each do |sr|
-                    @@jobsSr[@jobNumber][sr.attribute("name").to_s] = Rsgereq.new(@@complexList[sr.attribute("name").to_s], sr.text)
+                    @@jobsSr[@jobNumber][sr.attribute("name").to_s] = Rsgereq.new(sr.attribute("name").to_s, sr.text)
                 end
 
             end
