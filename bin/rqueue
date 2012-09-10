@@ -1,10 +1,9 @@
 #!/usr/bin/ruby
 
-require 'rsgequeues'
+require 'rsgequeue'
 
 queues = Rsgequeues.new
 
-queues.list.each do |queue|
-    queues.set_queue(queue)
-    puts queue.to_s + " " + queues.used.to_s + " " + queues.available.to_s + " " + queues.total.to_s
+queues.each do |queue|
+    puts queue.name.to_s + " " + queue.used.to_s + " " + queue.available.to_s + " " + queue.total.to_s
 end

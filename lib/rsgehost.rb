@@ -1,7 +1,6 @@
-require 'rsgereq'
-include REXML
+require 'rsgehosts'
 
-class Rsgehost
+class Rsgehost < Rsgehosts
     def initialize(host)
         @host = host
         @complexList = Hash.new
@@ -39,19 +38,23 @@ class Rsgehost
         end
     end
 
+    def name
+        @host
+    end
+
     def complex_list
-        return @complexList.keys.sort
+        @complexList.keys.sort
     end 
 
     def complex_value(cplx)
-        return @complexList[cplx]
+        @complexList[cplx]
     end 
 
     def load_list
-        return @complexList.keys.sort
+        @complexList.keys.sort
     end 
 
     def load_value(cplx)
-        return @complexList[cplx]
+        @complexList[cplx]
     end 
 end

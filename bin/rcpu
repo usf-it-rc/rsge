@@ -1,0 +1,9 @@
+#!/usr/bin/ruby
+
+require 'rsgehost'
+
+hosts = Rsgehosts.new
+
+hosts.each do |host|
+    puts host.name + " => " + hosts.load_value("cpu")
+end

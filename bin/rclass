@@ -2,15 +2,18 @@
 
 require 'rsgejob'
 require 'rsgehost'
-require 'rsgequeues'
+require 'rsgequeue'
 
 jobs   = Rsgejobs.new
 gh     = Rsgehost.new("global")
 queues = Rsgequeues.new
+totalSlots = 0
 
-queues.set_queue("default")
-
-totalSlots =  queues.total
+queues.each do |queue|
+    if (queue.name == "default")
+        totalSlots =  queue.total
+    end
+end
 
 xlong = 0
 xlongSlots = 0

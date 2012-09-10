@@ -27,7 +27,6 @@ puts "Number of matlab licenses max for cluster: " + globalHost.complex_value(:m
 jobs = Rsgejobs.new
 
 jobs.each do |job|
-
     puts job.jobid + " " + job.owner + " " + job.state
 end
 ...
@@ -53,3 +52,29 @@ end
 + hardRequest
 + softRequestList
 + softRequest
+
+## rsgequeue ##
+~~~
+require 'rsgequeue'
+
+queues = Rsgequeues.new
+
+queues.each do |queue|
+    puts queue.name.to_s + " " + queue.used.to_s + " " + queue.available.to_s + " " + queue.total.to_s
+end
+~~~
+### Methods (rsgequeue) ###
++ list
++ each
+
+### Methods (rsgequeue) (all return string) ###
++ name
++ load
++ used
++ reserved
++ available
++ total
++ disabled
+
+## rsgehost ##
+Still under development... not expected to work.
