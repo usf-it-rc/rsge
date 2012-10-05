@@ -1,7 +1,6 @@
 require 'time'
 require 'rexml/document'
 require 'nokogiri'
-require 'rsgequeues'
 
 class Rsgequeue < Rsgequeues
 
