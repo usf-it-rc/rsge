@@ -10,10 +10,11 @@ class Rsgehost < Rsgehosts
         str = fa.read.split("\n")
 
         str.each_with_index do |line, i|
-            line.chomp!
+            line.strip!
             nextline = nil
-            line.gsub!(/\s*\\\s*$/) { |match| nextline = str[i+1]; '' }
+            line.gsub!(/\s*\\\s*$/) { |match| nextline = str[i+1]; ''}
             if (nextline != nil)
+                str.delete_at(i+1)
                 line += nextline
                 redo
             end
