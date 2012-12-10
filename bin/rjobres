@@ -16,7 +16,7 @@ jobs.each do |job|
     hr = job.hard_request_list
     sr = job.soft_request_list
 
-    printf("\033[36m%10s\033[0m %3s %6s %16s => ", job.jobid, job.state, job.slots, job.owner)
+    printf("\033[36m%10s\033[0m %3s %6s %16s => ", job.jobid, job.state, job.slots, job.job_owner)
 
     hr.each do |cplx| 
         print "\033[31m" + cplx + "="

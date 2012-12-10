@@ -27,7 +27,7 @@ jobs.each do |job|
     hr.each do |cplx| 
         if (job.state == "qw")
             if (classes.include? cplx)
-                printf("%10s %3s %6s %16s %10s\n", job.jobid, job.state, job.slots, job.owner, cplx)
+                printf("%10s %3s %6s %16s %10s\n", job.jobid, job.state, job.slots, job.job_owner, cplx)
                 counts[cplx.to_sym] += 1
             end
         end
