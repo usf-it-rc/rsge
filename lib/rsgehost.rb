@@ -18,7 +18,7 @@ class RsgeHost
                 line.gsub!(/\s*\\\s*$/) { |match| nextline = str[i+1]; '' }
                 if (nextline != nil)
                     line += nextline
-                    redo
+                    #redo
                 end
                 if line.match(/^complex_values[ ]+.*/)
                     line.gsub!(/complex_values[ ]+/, "")
