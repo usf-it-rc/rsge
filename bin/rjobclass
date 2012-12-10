@@ -2,7 +2,7 @@
 
 require 'rsgejob'
 
-jobs = Rsgejobs.new
+jobs = RsgeJob.new
 
 xlong = 0
 long = 0

@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-require 'rsgejob'
 require 'rsgehost'
+require 'rsgejob'
 require 'rsgequeue'
 
-jobs       = Rsgejobs.new
-gh         = Rsgehost.new("global")
-queues     = Rsgequeues.new
+jobs       = RsgeJob.new
+gh         = RsgeHost.new("global")
+queues     = RsgeQueue.new
 totalSlots = 0
 
 queues.each do |queue|

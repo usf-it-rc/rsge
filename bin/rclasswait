@@ -2,11 +2,10 @@
 
 require 'rsgejob'
 require 'rsgehost'
-require 'rsgequeues'
 require 'time'
 require 'date'
 
-jobs    = Rsgejobs.new
+jobs    = RsgeJob.new
 
 xlong = 0
 xlongSubmitTotal = 0
