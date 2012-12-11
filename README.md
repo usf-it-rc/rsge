@@ -22,9 +22,9 @@ puts "Number of matlab licenses max for cluster: " + globalHost.complex_value(:m
 + (array) load_list
 + (string) load_value
 
-## rsgejobs ##
+## rsgejob ##
 ~~~
-jobs = Rsgejobs.new
+jobs = Rsgejob.new
 
 jobs.each do |job|
     puts job.jobid + " " + job.owner + " " + job.state
@@ -35,11 +35,9 @@ end
 3 user1 r
 4 user3 w
 ~~~
-### Methods (rsgejobs) ###
+### Methods (rsgejob) ###
 + each
 + list
-
-### Methods (rsgejob) (all return string) ###
 + jobid
 + slots
 + subTime
@@ -57,7 +55,7 @@ end
 ~~~
 require 'rsgequeue'
 
-queues = Rsgequeues.new
+queues = Rsgequeue.new
 
 queues.each do |queue|
     puts queue.name.to_s + " " + queue.used.to_s + " " + queue.available.to_s + " " + queue.total.to_s
@@ -66,8 +64,6 @@ end
 ### Methods (rsgequeue) ###
 + list
 + each
-
-### Methods (rsgequeue) (all return string) ###
 + name
 + load
 + used
