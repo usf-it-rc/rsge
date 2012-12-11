@@ -1,0 +1,14 @@
+hostname              global
+load_scaling          NONE
+complex_values        memory_per_slot=1024G,memory_per_job=1024G,matlab=17634, \
+                      short=4624,devel=4624,medium=2100,long=2000,xlong=768, \
+                      status=OK,pcpus=99999,ppn=99999,nodes=99999,li_aa_r=25, \
+                      li_aa_r_hpc=50,li_aa_mcad=25
+load_values           NONE
+processors            0
+user_lists            NONE
+xuser_lists           NONE
+projects              NONE
+xprojects             NONE
+usage_scaling         NONE
+report_variables      cpu,np_load_avg,mem_free,virtual_free

@@ -1,0 +1,23 @@
+hostname              SillyTestHost
+load_scaling          NONE
+complex_values        ib_qdr=true,sse4=true,sse41=true,sse42=true, \
+                      cpu_type=xeon,cpu_model=E5649,seq_no=1,slots=12, \
+                      h_vmem=24G,location=wh
+load_values           arch=lx-amd64,num_proc=12,mem_total=24013.671875M, \
+                      swap_total=26207.992188M,virtual_total=50221.664062M, \
+                      m_topology=SCCCCCCSCCCCCC,m_socket=2,m_core=12, \
+                      m_thread=12,load_avg=3.000000,load_short=3.000000, \
+                      load_medium=3.000000,load_long=3.000000, \
+                      mem_free=21575.687500M,swap_free=24531.652344M, \
+                      virtual_free=46107.339844M,mem_used=2437.984375M, \
+                      swap_used=1676.339844M,virtual_used=4114.324219M, \
+                      cpu=25.200000,m_topology_inuse=SCCCCCCSCCCCCC, \
+                      np_load_avg=0.250000,np_load_short=0.250000, \
+                      np_load_medium=0.250000,np_load_long=0.250000,status=OK
+processors            12
+user_lists            NONE
+xuser_lists           NONE
+projects              NONE
+xprojects             NONE
+usage_scaling         NONE
+report_variables      NONE

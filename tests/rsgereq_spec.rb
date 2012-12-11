@@ -5,5 +5,5 @@ require 'rsgehost'
 hosts = RsgeHost.new
 
 hosts.each do |host|
-    puts host.name + " => " + host.load_value(:num_proc).to_s
+    puts host.name + " => " + hosts.load_value("cpu")
 end

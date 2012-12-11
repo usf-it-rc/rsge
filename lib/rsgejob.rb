@@ -5,12 +5,17 @@ require 'rubygems'
 require 'nokogiri'
 require 'hash_accessor'
 
-class RsgeJob < Rsgereq
-
+# Provides methods for viewing GridEngine job information
+class RsgeJob
     extend HashAccessor
+
+    # no-brainer accessors
     hash_accessor :job, :jobid, :slots, :submission_time, :start_time, :qname,
                   :hqueue, :state, :job_owner
 
+    # In an 'overloaded' way, create the object based on whether an argument
+    # is provided.  This will let us create either a base object with the current
+    # job list or provide an object populated with a specific job's data
     def initialize(*args)
         if (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
             doc = doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
@@ -38,11 +43,11 @@ class RsgeJob < Rsgereq
                 @@jobs[@jobNumber][:slots] = node.at_xpath(".//slots").text.to_s
  
                 doc.xpath(node.path + "/hard_request").each do |hr|
-                    @@jobsHr[@jobNumber][hr.attribute("name").to_s] = Rsgereq.new(hr.attribute("name").to_s, hr.text)
+                    @@jobsHr[@jobNumber][hr.attribute("name").to_s] = RsgeReq.new(hr.attribute("name").to_s, hr.text)
                 end
 
                 doc.xpath(node.path + "/soft_request").each do |sr|
-                    @@jobsSr[@jobNumber][sr.attribute("name").to_s] = Rsgereq.new(sr.attribute("name").to_s, sr.text)
+                    @@jobsSr[@jobNumber][sr.attribute("name").to_s] = RsgeReq.new(sr.attribute("name").to_s, sr.text)
                 end
 
             end
@@ -53,30 +58,36 @@ class RsgeJob < Rsgereq
         end
     end
 
-    # Accessor methods
+    # provide an RsgeJob for each job currently active
     def each
         self.list.each do |jobid|
             yield RsgeJob.new(jobid)
         end
     end
 
-    # One-off accessor methods
+    # provide an array of the current job ids
     def list
         @@jobs.keys.sort
     end
 
+    # provide the hard resource request list for the current RsgeJob
     def hard_request_list
         @jobHr.keys.sort
     end 
 
+    # Provide the value of the specific hard resource request for the current RsgeJob
+    # This returns an RsgeReq
     def hard_request(cplx)
         @jobHr[cplx]
     end 
    
+    # provide the soft resource request list for the current RsgeJob
     def soft_request_list
         @jobSr.keys.sort
     end 
 
+    # Provide the value of the specific soft resource request for the current RsgeJob
+    # This returns an RsgeReq
     def soft_request(cplx)
         @jobSr[cplx]
     end
