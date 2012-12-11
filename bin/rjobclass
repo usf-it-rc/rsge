@@ -2,7 +2,12 @@
 
 require 'rsgejob'
 
+# Use our rspec data instead
+$rspec_init = true
+
 jobs = RsgeJob.new
+
+p jobs.list.count
 
 xlong = 0
 long = 0

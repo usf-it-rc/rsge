@@ -17,8 +17,15 @@ class RsgeJob
     # is provided.  This will let us create either a base object with the current
     # job list or provide an object populated with a specific job's data
     def initialize(*args)
+
         if (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
-            doc = doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
+
+            if ($rspec_init == true)
+                doc = Nokogiri::XML(open("sample_data/job_list.xml"))
+            else
+                doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
+            end
+
             @@jobs = Hash.new
             @@jobsHr = Hash.new
             @@jobsSr = Hash.new
