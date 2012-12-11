@@ -3,8 +3,14 @@ class RsgeReq
 
         if (!defined?(@@complexList))
             @@complexList = Hash.new
-            open("|qconf -sc").read.each_line do |line|
-                @@complexList[(line.to_s.split)[0]] = (line.to_s.split)[2]
+            if ($rspec_init == true)
+                open("sample_data/complex_list.txt").read.each_line do |line|
+                    @@complexList[(line.to_s.split)[0]] = (line.to_s.split)[2]
+                end
+            else
+                open("|qconf -sc").read.each_line do |line|
+                    @@complexList[(line.to_s.split)[0]] = (line.to_s.split)[2]
+                end
             end 
         end
     

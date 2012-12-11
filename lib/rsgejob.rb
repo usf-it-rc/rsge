@@ -17,13 +17,29 @@ class RsgeJob
     # is provided.  This will let us create either a base object with the current
     # job list or provide an object populated with a specific job's data
     def initialize(*args)
+        if (args[0] != nil)
+            conf = args[0]
+        else
+            conf = Hash.new
+        end
+
+	    if (conf.class != Hash)
+            raise ArgumentError, "Argument is not a hash!"
+        end
+        
+        # set default options for our hash
+        conf[:enumerate] == :all if !defined?(conf[:enumerate])
 
         if (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
 
             if ($rspec_init == true)
                 doc = Nokogiri::XML(open("sample_data/job_list.xml"))
             else
-                doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
+                if (conf[:enumerate] == :all)
+                    doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
+                else
+                    doc = Nokogiri::XML(open("|qstat -r -u \\* -xml -j #{conf[:jobid]}"))
+                end
             end
 
             @@jobs = Hash.new
@@ -31,7 +47,6 @@ class RsgeJob
             @@jobsSr = Hash.new
             
             doc.xpath("*/*/job_list").each do |node|
-                #state = element.attribute("state").to_s
                 state = node.attribute("state").to_s
 
                 @jobNumber = node.at_xpath(".//JB_job_number").to_str
@@ -41,8 +56,15 @@ class RsgeJob
                 @@jobsSr[@jobNumber] = Hash.new
 
                 @@jobs[@jobNumber][:jobid] = @jobNumber
-                @@jobs[@jobNumber][:submission_time] = Time.parse(node.at_xpath(".//JB_submission_time").to_s)
-                @@jobs[@jobNumber][:start_time] = Time.parse(node.at_xpath(".//JAT_start_time").to_s)
+
+                if (node.at_xpath(".//JB_submission_time").to_s != "")
+                    @@jobs[@jobNumber][:submission_time] = Time.parse(node.at_xpath(".//JB_submission_time").to_s)
+                end
+
+                if (node.at_xpath(".//JAT_start_time").to_s != "")
+                    @@jobs[@jobNumber][:start_time] = Time.parse(node.at_xpath(".//JAT_start_time").to_s)
+                end
+
                 @@jobs[@jobNumber][:job_owner] = node.at_xpath(".//JB_owner").text.to_s
                 @@jobs[@jobNumber][:qname] = node.at_xpath(".//queue_name").text.to_s
                 @@jobs[@jobNumber][:hqueue] = node.at_xpath(".//hard_req_queue").to_s
@@ -59,9 +81,10 @@ class RsgeJob
 
             end
         else
-            @job = @@jobs[args[0]]
-            @jobHr = @@jobsHr[args[0]]
-            @jobSr = @@jobsSr[args[0]]
+            jobid = conf[:jobid]
+            @job = @@jobs[jobid]
+            @jobHr = @@jobsHr[jobid]
+            @jobSr = @@jobsSr[jobid]
         end
     end
 

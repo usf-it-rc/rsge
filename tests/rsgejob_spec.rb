@@ -7,14 +7,17 @@ $rspec_init = true
 describe RsgeJob do
     before :all do
         @jobs = RsgeJob.new
+        @nonEnumJob = RsgeJob.new({ :enumerate => :job, :jobid => "79644" })
     end
     
     it "takes zero or one parameters and returns an RsgeJob object" do
         @jobs.should be_an_instance_of RsgeJob
+        @nonEnumJob.should be_an_instance_of RsgeJob
     end
 
     it "returns full job list" do
         @jobs.list.count.should eql(985)
+        @nonEnumJob.list.count.should eql(985)
     end
 
 end
