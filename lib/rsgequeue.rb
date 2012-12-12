@@ -39,7 +39,12 @@ class RsgeQueue
     private
 
     def q_parser
-        doc = Nokogiri::XML(open("|qstat -g c -ext -xml"))
+        if ($rspec_init == true)
+            doc = Nokogiri::XML(open("sample_data/queue_status.xml"))
+        else
+            doc = Nokogiri::XML(open("|qstat -g c -ext -xml"))
+        end
+
         @@queues = Hash.new
             
         doc.xpath("job_info/cluster_queue_summary").each do |node|
