@@ -12,8 +12,15 @@
 <body class="standalone-code">
   <pre><span class="ruby-comment cmt"># File lib/rsgejob.rb, line 19</span>
     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+
         <span class="ruby-keyword kw">if</span> (<span class="ruby-operator">!</span><span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@@jobs</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@@jobsHr</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@@jobsSr</span>))
-            <span class="ruby-identifier">doc</span> = <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Nokogiri</span><span class="ruby-operator">::</span><span class="ruby-constant">XML</span>(<span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;|qstat -r -u \\* -xml&quot;</span>))
+
+            <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">$rspec_init</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>)
+                <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Nokogiri</span><span class="ruby-operator">::</span><span class="ruby-constant">XML</span>(<span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;sample_data/job_list.xml&quot;</span>))
+            <span class="ruby-keyword kw">else</span>
+                <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Nokogiri</span><span class="ruby-operator">::</span><span class="ruby-constant">XML</span>(<span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;|qstat -r -u \\* -xml&quot;</span>))
+            <span class="ruby-keyword kw">end</span>
+
             <span class="ruby-ivar">@@jobs</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
             <span class="ruby-ivar">@@jobsHr</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
             <span class="ruby-ivar">@@jobsSr</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>

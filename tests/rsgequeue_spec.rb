@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# rsgequeue_spec.rb
 
 require 'rsgequeue'
 

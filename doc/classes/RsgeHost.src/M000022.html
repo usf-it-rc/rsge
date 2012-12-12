@@ -5,14 +5,77 @@
 
 <html>
 <head>
-  <title>load_value (RsgeHost)</title>
+  <title>new (RsgeHost)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/rsgehost.rb, line 88</span>
-    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">load_value</span>(<span class="ruby-identifier">cplx</span>)
-        <span class="ruby-ivar">@complexList</span>[<span class="ruby-identifier">cplx</span>]
+  <pre><span class="ruby-comment cmt"># File lib/rsgehost.rb, line 8</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+        <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-keyword kw">nil</span>)
+            <span class="ruby-ivar">@host</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>]
+            <span class="ruby-ivar">@complexList</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+            <span class="ruby-ivar">@loadList</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+
+            <span class="ruby-keyword kw">if</span> (<span class="ruby-operator">!</span><span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@hosts</span>))
+                <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">$rspec_init</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>)
+                    <span class="ruby-ivar">@hosts</span> = <span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;sample_data/host_list.txt&quot;</span>).<span class="ruby-identifier">read</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+                <span class="ruby-keyword kw">else</span>
+                    <span class="ruby-ivar">@hosts</span> = <span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;|qconf -sel&quot;</span>).<span class="ruby-identifier">read</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+                <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">$rspec_init</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>)
+                <span class="ruby-identifier">fa</span> = <span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;sample_data/compute_host.txt&quot;</span>)
+            <span class="ruby-keyword kw">else</span>
+                <span class="ruby-identifier">fa</span> = <span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;|qconf -se &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@host</span>)
+            <span class="ruby-keyword kw">end</span>
+
+            <span class="ruby-identifier">str</span> = <span class="ruby-identifier">fa</span>.<span class="ruby-identifier">read</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+            <span class="ruby-identifier">fa</span>.<span class="ruby-identifier">close</span>
+            
+            <span class="ruby-comment cmt"># Given a host, lets parse the output of `qconf -se *hostname*`... we'll need to deal </span>
+            <span class="ruby-comment cmt"># with pesky multi-lines and line continuation characters</span>
+            <span class="ruby-identifier">nextline</span> = <span class="ruby-keyword kw">nil</span>
+            <span class="ruby-identifier">str</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+                <span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp!</span>
+
+                <span class="ruby-identifier">line</span> = <span class="ruby-identifier">nextline</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">line</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">nextline</span> <span class="ruby-operator">!=</span> <span class="ruby-keyword kw">nil</span>
+
+                <span class="ruby-keyword kw">if</span> (<span class="ruby-regexp re">/[ ]+\\[ ]*$/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">line</span>))
+                    <span class="ruby-identifier">nextline</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/[ ]+\\[ ]*$/</span>,<span class="ruby-value str">&quot;&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">nextline</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+                    <span class="ruby-identifier">nextline</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">str</span>[<span class="ruby-identifier">i</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>].<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/[ ]+\\[ ]*$/</span>,<span class="ruby-value str">&quot;&quot;</span>)
+                    <span class="ruby-keyword kw">next</span>
+                <span class="ruby-keyword kw">end</span>
+
+                <span class="ruby-identifier">nextline</span> = <span class="ruby-keyword kw">nil</span>
+
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/^complex_values[ ]+.*/</span>)
+                    <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/complex_values[ ]+/</span>, <span class="ruby-value str">&quot;&quot;</span>)
+                    <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/,\s*/</span>, <span class="ruby-value str">&quot;,&quot;</span>)
+                    <span class="ruby-identifier">cplx</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;,&quot;</span>)
+
+                    <span class="ruby-identifier">cplx</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pair</span><span class="ruby-operator">|</span>
+                        <span class="ruby-ivar">@complexList</span>[(<span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;=&quot;</span>))[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_sym</span>] = (<span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;=&quot;</span>))[<span class="ruby-value">1</span>] 
+                    <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/^load_values[ ]+.*/</span>)
+                    <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/load_values[ ]+/</span>, <span class="ruby-value str">&quot;&quot;</span>)
+                    <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/,\s*/</span>, <span class="ruby-value str">&quot;,&quot;</span>)
+                    <span class="ruby-identifier">cplx</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;,&quot;</span>)
+
+                    <span class="ruby-identifier">cplx</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pair</span><span class="ruby-operator">|</span>
+                        <span class="ruby-ivar">@loadList</span>[(<span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;=&quot;</span>))[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_sym</span>] = (<span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;=&quot;</span>))[<span class="ruby-value">1</span>] 
+                    <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">else</span>
+            <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">$rspec_init</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>)
+                <span class="ruby-ivar">@hosts</span> = <span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;sample_data/host_list.txt&quot;</span>).<span class="ruby-identifier">read</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+            <span class="ruby-keyword kw">else</span>
+                <span class="ruby-ivar">@hosts</span> = <span class="ruby-identifier">open</span>(<span class="ruby-value str">&quot;|qconf -sel&quot;</span>).<span class="ruby-identifier">read</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+            <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span> 
     <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
