@@ -5,7 +5,7 @@ require 'rsgehost'
 require 'time'
 require 'date'
 
-jobs    = RsgeJob.new
+jobs    = RsgeJob.new( { :enumerate => :all } )
 
 xlong = 0
 xlongSubmitTotal = 0
@@ -24,19 +24,19 @@ jobs.each do |job|
     if (job.state == "qw")
         if hr.include?('xlong')
             xlong = xlong+1
-            xlongSubmitTotal += now.to_i - job.subTime.to_i
+            xlongSubmitTotal += now.to_i - job.submission_time.to_i
         end
         if hr.include?('long')
             long = long+1
-            longSubmitTotal += now.to_i - job.subTime.to_i
+            longSubmitTotal += now.to_i - job.submission_time.to_i
         end
         if hr.include?('medium')
             medium = medium+1
-            mediumSubmitTotal += now.to_i - job.subTime.to_i
+            mediumSubmitTotal += now.to_i - job.submission_time.to_i
         end
         if hr.include?('short')
             short = short+1
-            shortSubmitTotal += now.to_i - job.subTime.to_i
+            shortSubmitTotal += now.to_i - job.submission_time.to_i
         end
     end
 end

@@ -24,7 +24,7 @@ class RsgeJob
         end
 
 	    if (conf.class != Hash)
-            raise ArgumentError, "Argument is not a hash!"
+            raise ArgumentError, "Argument is not a hash! #{conf.class} #{conf}"
         end
         
         # set default options for our hash
@@ -35,10 +35,16 @@ class RsgeJob
             if ($rspec_init == true)
                 doc = Nokogiri::XML(open("sample_data/job_list.xml"))
             else
+                user = "\\*"
+                user = conf[:user] if (conf.has_key?(:user))
+                
+                state = "a"
+                state = conf[:state] if (conf.has_key?(:state))
+
                 if (conf[:enumerate] == :all)
-                    doc = Nokogiri::XML(open("|qstat -r -u \\* -xml"))
+                    doc = Nokogiri::XML(open("|qstat -r -u #{user} -xml -s #{state}"))
                 else
-                    doc = Nokogiri::XML(open("|qstat -r -u \\* -xml -j #{conf[:jobid]}"))
+                    doc = Nokogiri::XML(open("|qstat -r -u #{user} -xml -j #{conf[:jobid]} -s #{state}"))
                 end
             end
 
@@ -91,7 +97,7 @@ class RsgeJob
     # provide an RsgeJob for each job currently active
     def each
         self.list.each do |jobid|
-            yield RsgeJob.new(jobid)
+            yield RsgeJob.new( { :jobid => jobid } )
         end
     end
 

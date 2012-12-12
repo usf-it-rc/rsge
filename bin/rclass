@@ -4,7 +4,7 @@ require 'rsgehost'
 require 'rsgejob'
 require 'rsgequeue'
 
-jobs       = RsgeJob.new
+jobs       = RsgeJob.new({ :enumerate => :all })
 gh         = RsgeHost.new("global")
 queues     = RsgeQueue.new
 totalSlots = 0

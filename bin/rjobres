@@ -2,7 +2,7 @@
 
 require 'rsgejob'
 
-jobs = RsgeJob.new
+jobs = RsgeJob.new( { :enumerate => :all } )
 
 xlong = 0
 long = 0
