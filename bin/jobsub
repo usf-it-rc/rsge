@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+#
+# Test out submitting a job
+#
+
+require "rsgejob"
+
+script = <<EOF
+#!/bin/bash
+#
+
+hostname
+EOF
+
+job = RsgeJob.new( {
+    :submit     => true,
+    :job_name   => "test_job",
+    :cwd        => true,
+    :script     => script
+} )
+
+puts job.jobid.to_s + " " + job.job_owner

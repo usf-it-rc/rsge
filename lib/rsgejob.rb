@@ -4,6 +4,7 @@ require 'rexml/document'
 require 'rubygems'
 require 'nokogiri'
 require 'hash_accessor'
+require 'open3'
 
 # Provides methods for viewing GridEngine job information
 class RsgeJob
@@ -30,7 +31,46 @@ class RsgeJob
         # set default options for our hash
         conf[:enumerate] == :all if !defined?(conf[:enumerate])
 
-        if (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
+        if (defined?(conf[:submit]) and conf[:submit] == true)
+            # pull options from the submit hash
+            cmdargs  = ""
+            cmdargs  = " -hard -l #{conf[:hard_resreq]}"  if conf.has_key?(:hard_resreq)
+            cmdargs += " -soft -l #{conf[:soft_resreq]}"  if conf.has_key?(:soft_resreq)
+            cmdargs += " -j y" if (conf.has_key?(:joinout) and conf[:joinout] == true)
+            cmdargs += " -o #{conf[:outfile]}" if conf.has_key?(:outfile)
+            cmdargs += " -e #{conf[:errfile]}" if conf.has_key?(:errfile)
+            cmdargs += " -N #{conf[:job_name]}" if conf.has_key?(:job_name)
+            cmdargs += " -cwd" if (conf.has_key?(:cwd) and conf[:cwd] == true)
+            cmdargs += " -wd #{conf[:wd]}" if conf.has_key?(:wd)
+            cmdargs += " -q #{conf[:queue]}" if conf.has_key?(:queue)
+            cmdargs += " -pe #{conf[:pe]} #{conf[:pe_slots]}" if (conf.has_key?(:pe) and conf.has_key?(:pe_slots))
+
+            # TODO: Implement the rest of the switches as hash keys/options
+
+            # we're going to submit a job
+            status = ""
+
+            Open3.popen3("qsub#{cmdargs}"){ |i,o,e,t|
+                i.puts conf[:script]
+                i.close
+                status = o.gets
+                o.close
+                e.close
+            }
+
+            # check status
+            if status.class == String and status.match(/^Your job [0-9]+.*submitted$/)
+                # TODO: :enumerate => :job is still acting funny.  SGE XML is hard to predict
+                jobid = status.match(/^Your job ([0-9]+).*submitted$/)[1]
+                return RsgeJob.new( { :enumerate => :job, :jobid => jobid } )
+            else
+                raise RuntimeError, "Job submission to SGE failed!"
+                return nil
+            end
+
+            # Return an RsgeJob that we can work with :)
+
+        elsif (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
 
             if ($rspec_init == true)
                 doc = Nokogiri::XML(open("sample_data/job_list.xml"))
@@ -63,6 +103,7 @@ class RsgeJob
 
                 @@jobs[@jobNumber][:jobid] = @jobNumber
 
+                # TODO: Store more attributes
                 if (node.at_xpath(".//JB_submission_time").to_s != "")
                     @@jobs[@jobNumber][:submission_time] = Time.parse(node.at_xpath(".//JB_submission_time").to_s)
                 end
