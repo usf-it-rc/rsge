@@ -13,10 +13,12 @@ hostname
 EOF
 
 job = RsgeJob.new( {
-    :submit     => true,
     :job_name   => "test_job",
     :cwd        => true,
-    :script     => script
+    :script     => script,
+    :hard_resreq => ["mem_free=1G", "pcpus=1"]
 } )
 
-puts job.jobid.to_s + " " + job.job_owner
+job.submit
+
+puts job.jobid + " " + job.job_owner
