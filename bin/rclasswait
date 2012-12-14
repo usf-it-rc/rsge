@@ -5,7 +5,7 @@ require 'rsgehost'
 require 'time'
 require 'date'
 
-jobs    = RsgeJob.new( { :enumerate => :all } )
+jobs    = RsgeJobs.new
 
 xlong = 0
 xlongSubmitTotal = 0

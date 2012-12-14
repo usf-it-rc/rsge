@@ -3,7 +3,7 @@
 #
 require "open3"
 
-module Rutilities
+module RsgeUtil
     # Say we have an object variable that's a hash.  We might want
     # accessors for a bunch of its keys, right?
     def hash_accessor(hash_name, *key_names)

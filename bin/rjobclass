@@ -4,7 +4,7 @@ require 'rsgejob'
 
 # Use our rspec data instead
 
-jobs = RsgeJob.new( { :enumerate => :all } )
+jobs = RsgeJobs.new
 
 p jobs.list.count
 

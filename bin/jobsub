@@ -9,16 +9,20 @@ script = <<EOF
 #!/bin/bash
 #
 
-hostname
+sleep 1000000
 EOF
 
 job = RsgeJob.new( {
     :job_name   => "test_job",
     :cwd        => true,
     :script     => script,
-    :hard_resreq => ["mem_free=1G", "pcpus=1"]
+    :hard_resreq => ["mem_free=1G", "pcpus=1", "h_rt=96:00:00"]
 } )
 
 job.submit
 
-puts job.jobid + " " + job.job_owner
+puts job.jobid + " " + job.job_owner + " " + job.state
+
+job.delete
+
+puts job.jobid + " " + job.job_owner + " " + job.state

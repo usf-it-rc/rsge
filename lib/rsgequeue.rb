@@ -2,10 +2,10 @@ require 'time'
 require 'rexml/document'
 require 'rubygems'
 require 'nokogiri'
-require 'hash_accessor'
+require 'rsgeutil'
 
 class RsgeQueue
-    extend HashAccessor
+    extend RsgeUtil
     hash_accessor :queue, :name, :load, :used, :resv, :avail, :total
 
     # Create a new object which represents all queues or a specified queue

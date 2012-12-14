@@ -2,7 +2,7 @@
 
 require 'rsgejob'
 
-jobs = RsgeJob.new( { :enumerate => :all } )
+jobs = RsgeJobs.new
 
 xlong = 0
 long = 0
@@ -13,21 +13,21 @@ jobs.each do |job|
     if (job.jobid != ARGV[0] && ARGV[0] != nil)
         next
     end
-    hr = job.hard_request_list
-    sr = job.soft_request_list
+    hr = job.hard_resreq
+    sr = job.soft_resreq
 
     printf("\033[36m%10s\033[0m %3s %6s %16s => ", job.jobid, job.state, job.slots, job.job_owner)
 
     hr.each do |cplx| 
-        print "\033[31m" + cplx + "="
-        if (cplx == "mem_free" || cplx == "virtual_free")
-            print "%.2fG " % job.hard_request(cplx).as_gibi
+        print "\033[31m" + cplx[0] + "="
+        if (cplx[0] == "mem_free" || cplx[0] == "virtual_free")
+            print "%.2fG " % cplx[1].as_gibi
         else
-            print job.hard_request(cplx).value + "\033[0m "
+            print cplx[1].value + "\033[0m "
         end
     end
     sr.each do |cplx|
-        print "\033[32m" + cplx + "=" + job.soft_request(cplx).value + "\033[0m "
+        print "\033[32m" + cplx[0] + "=" + cplx[1].value + "\033[0m "
     end
     puts
 end

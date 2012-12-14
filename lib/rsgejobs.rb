@@ -3,7 +3,6 @@ require 'time'
 require 'rexml/document'
 require 'rubygems'
 require 'nokogiri'
-require 'rutilities'
 require 'rsgejob'
 
 # Provides methods for viewing GridEngine job information
@@ -11,29 +10,30 @@ class RsgeJobs
     # In an 'overloaded' way, create the object based on whether an argument
     # is provided.  This will let us create either a base object with the current
     # job list or provide an object populated with a specific job's data
-    def initialize
+    def initialize(*args)
         if (args[0] != nil)
             conf = args[0]
         else
             conf = Hash.new
         end
 
-	    if (conf.class != Hash)
-            raise ArgumentError, "Argument is not a hash! #{conf.class} #{conf}"
+        if (conf.has_key?(:jobid))
+            if !defined?(@@jobs)
+                RsgeJobs.new  
+            end
+            return RsgeJob.new({ :jobid => conf[:jobid] })
         end
-        
+
         if (!defined?(@@jobs) && !defined?(@@jobsHr) && !defined?(@@jobsSr))
+            j_status = "a"
+            j_status = conf[:j_status] if conf.has_key?(:j_status)
+            j_user = "\\*"
+            j_user = conf[:j_user] if conf.has_key?(:j_user)
 
             if ($rspec_init == true)
                 doc = Nokogiri::XML(open("sample_data/job_list.xml"))
             else
-                user = "\\*"
-                user = conf[:user] if (conf.has_key?(:user))
-                
-                state = "a"
-                state = conf[:state] if (conf.has_key?(:state))
-
-                doc = Nokogiri::XML(open("|qstat -r -u #{user} -xml -s #{state}"))
+                doc = Nokogiri::XML(open("|qstat -r -xml -u #{j_user} -s #{j_status}"))
             end
 
             @@jobs = Hash.new
@@ -61,8 +61,8 @@ class RsgeJobs
                 end
 
                 @@jobs[@jobNumber][:job_owner] = node.at_xpath(".//JB_owner").text.to_s
-                @@jobs[@jobNumber][:qname] = node.at_xpath(".//queue_name").text.to_s
-                @@jobs[@jobNumber][:hqueue] = node.at_xpath(".//hard_req_queue").to_s
+                @@jobs[@jobNumber][:job_name] = node.at_xpath(".//JB_name").text.to_s
+                @@jobs[@jobNumber][:queue_name] = node.at_xpath(".//queue_name").text.to_s
                 @@jobs[@jobNumber][:state] = node.at_xpath(".//state").text.to_s
                 @@jobs[@jobNumber][:slots] = node.at_xpath(".//slots").text.to_s
  

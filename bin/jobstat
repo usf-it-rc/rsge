@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+#
+# Test out submitting a job
+#
+
+require "rsgejob"
+
+job = RsgeJob.new( {
+    :jobid => ARGV[0]
+} )
+
+p job.hard_resreq.keys
+
+puts job.jobid + " " + job.job_owner + " " + job.state
+
+#job.delete
+#
+#puts job.jobid + " " + job.job_owner + " " + job.state
