@@ -9,9 +9,12 @@ job = RsgeJob.new( {
     :jobid => ARGV[0]
 } )
 
-p job.hard_resreq.keys
+if job.valid == false
+    puts "No such job #{ARGV[0]}"
+    exit 0
+end
 
-puts job.jobid + " " + job.job_owner + " " + job.state
+puts job.jobid + " " + job.job_owner + " " + job.state + " " + job.name
 
 #job.delete
 #

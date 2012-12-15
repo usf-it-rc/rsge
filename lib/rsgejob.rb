@@ -12,7 +12,7 @@ class RsgeJob < RsgeJobs
     attr_accessor :jobid, :job_name, :slots, :submission_time, :start_time, :queue,
                   :state, :job_owner, :pe, :pe_slots, :reservation, :cwd, :wd,
                   :hard_resreq, :soft_resreq, :joinout, :outfile, :errfile, :script,
-                  :queue_name
+                  :queue_name, :valid
 
     # In an 'overloaded' way, create the object based on whether an argument
     # is provided.  This will let us create either a base object with the current
@@ -29,6 +29,9 @@ class RsgeJob < RsgeJobs
             raise ArgumentError, "Argument is not a hash! #{conf.class} #{conf}"
         end
 
+        # We're a valid job unless we run into some condition
+        self.valid = true
+
         if conf.has_key?(:jobid)
             # We're providing a job and its info
             if (!defined?(@@jobs) or !defined?(@@jobsHr) or !defined?(@@jobsSr))
@@ -38,6 +41,11 @@ class RsgeJob < RsgeJobs
             job     = @@jobs[conf[:jobid]]
             jobhres = @@jobsHr[conf[:jobid]]
             jobsres = @@jobsSr[conf[:jobid]]
+
+            if job == nil
+                self.valid = false
+                return self
+            end
 
             self.jobid          = job[:jobid]
             self.job_owner      = job[:job_owner]
