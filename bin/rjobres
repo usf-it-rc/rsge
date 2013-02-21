@@ -1,33 +1,26 @@
 #!/usr/bin/env ruby
 
-require 'rsgejob'
+require 'rsgejobs'
 
 jobs = RsgeJobs.new
 
-xlong = 0
-long = 0
-medium = 0
-short = 0
-
 jobs.each do |job|
-    if (job.jobid != ARGV[0] && ARGV[0] != nil)
-        next
-    end
-    hr = job.hard_resreq
-    sr = job.soft_resreq
+  if (job.jobid != ARGV[0] && ARGV[0] != nil)
+    next
+  end
 
-    printf("\033[36m%10s\033[0m %3s %6s %16s => ", job.jobid, job.state, job.slots, job.job_owner)
+  printf "\033[36m%10s\033[0m %3s %6s %16s => ", job.jobid, job.state, job.slots, job.job_owner
 
-    hr.each do |cplx| 
-        print "\033[31m" + cplx[0] + "="
-        if (cplx[0] == "mem_free" || cplx[0] == "virtual_free")
-            print "%.2fG " % cplx[1].as_gibi
-        else
-            print cplx[1].value + "\033[0m "
-        end
+  job.hard_requests.keys.each do |cplx| 
+    print "\033[31m" + cplx.to_s + "="
+    if cplx.to_s =~ /(mem|virtual)_.*/
+      print "%.2fG " % job.hard_requests[cplx].as_bytes.as_gibi
+    else
+      print job.hard_requests[cplx].value + "\033[0m "
     end
-    sr.each do |cplx|
-        print "\033[32m" + cplx[0] + "=" + cplx[1].value + "\033[0m "
-    end
-    puts
+  end
+  job.soft_requests.keys.each do |cplx|
+    print "\033[32m" + cplx + "=" + job.soft_requests[cplx].value + "\033[0m "
+  end
+  puts
 end

@@ -12,17 +12,18 @@ script = <<EOF
 sleep 1000000
 EOF
 
-job = RsgeJob.new( {
-    :job_name   => "test_job",
-    :cwd        => true,
-    :script     => script,
-    :hard_resreq => ["mem_free=1G", "pcpus=1", "h_rt=96:00:00"]
-} )
+job = RsgeJob.new do |j|
+  j.job_name = "test_job"
+  j.cwd = true
+  j.script = script
+  j.hard_requests = { :mem_free => "1G", :pcpus => 1, :h_rt => "96:00:00" }
+end
 
 job.submit
 
-puts job.jobid + " " + job.job_owner + " " + job.state
-
-job.delete
-
-puts job.jobid + " " + job.job_owner + " " + job.state
+puts "=== " + job.jobid + " ==="
+puts " -  " + job.job_name
+puts " -  " + job.cwd.to_s
+puts "==="
+puts job.script
+puts "==="

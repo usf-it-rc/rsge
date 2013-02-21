@@ -29,26 +29,24 @@ shortSlots = 0
 shortAvail = gh.complex_value(:short).to_i
 
 jobs.each do |job|
-    hr = job.hard_resreq
-    sr = job.soft_resreq
 
     if (job.state == "r")
-        if hr.include?('xlong')
+        if job.hard_requests.include?(:xlong)
             xlong = xlong+1
             xlongSlots += job.slots.to_i
             xlongAvail -= job.slots.to_i
         end
-        if hr.include?('long')
+        if job.hard_requests.include?(:long)
             long = long+1
             longSlots += job.slots.to_i
             longAvail -= job.slots.to_i
         end
-        if hr.include?('medium')
+        if job.hard_requests.include?(:medium)
             medium = medium+1
             mediumSlots += job.slots.to_i
             mediumAvail -= job.slots.to_i
         end
-        if hr.include?('short')
+        if job.hard_requests.include?(:short)
             short = short+1
             shortSlots += job.slots.to_i
             shortAvail -= job.slots.to_i

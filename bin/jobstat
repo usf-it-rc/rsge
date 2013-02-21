@@ -5,16 +5,14 @@
 
 require "rsgejob"
 
-job = RsgeJob.new( {
-    :jobid => ARGV[0]
-} )
+job = RsgeJob.new :jobid => ARGV[0]
 
 if job.valid == false
     puts "No such job #{ARGV[0]}"
     exit 0
 end
 
-puts job.jobid + " " + job.job_owner + " " + job.state + " " + job.name
+puts job.jobid + " " + job.job_owner + " " + job.state + " " + job.job_name
 
 #job.delete
 #
