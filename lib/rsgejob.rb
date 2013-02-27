@@ -34,13 +34,12 @@ class RsgeJob
     self.valid = true
 
     if conf.has_key?(:jobid)
-      parse_job_by_id conf[:jobid]
+      parse_job_by_id conf
     end
   end
     
+  # Submit our job... We'll need to play with defining the job owner, sudo for the qsub call, etc.
   def submit
-    # pull options from the submit hash
-    cmdargs  = ""
 
     # resource requests
     if self.hard_requests != nil
@@ -49,28 +48,29 @@ class RsgeJob
       h_res_req = "-hard -l " + reqs * ","
     end
 
-    if (self.soft_resreq != nil)
+    if self.soft_requests != nil
       reqs = Array.new
       self.soft_requests.keys.each { |cplx| reqs << cplx.to_s + "=" + self.soft_requests[cplx].to_s }
       s_res_req = "-soft -l " + reqs * ","
     end
 
     # build our command-line arguments from our accessor info
-    cmdargs  = " #{h_res_req}"      if (defined?(h_res_req))
-    cmdargs += " #{s_res_req}"      if (defined?(s_res_req))
-    cmdargs += " -j y"          if self.joinout == true
-    cmdargs += " -o #{self.outfile}"  if self.outfile != nil
-    cmdargs += " -e #{self.errfile}"  if self.errfile != nil
-    cmdargs += " -N #{self.job_name}"   if self.job_name != nil
-    cmdargs += " -cwd"          if self.cwd == true
-    cmdargs += " -wd #{self.wd}"    if self.wd != nil
-    cmdargs += " -q #{self.queue}"    if self.queue != nil
-    cmdargs += " -pe #{self.pe} #{self.pe_slots}" if (self.pe != nil and self.pe_slots != nil)
+    cmdargs = Array.new
+    cmdargs << h_res_req              if defined?(h_res_req)
+    cmdargs << s_res_req              if defined?(s_res_req)
+    cmdargs << "-j y"                 if self.joinout == true
+    cmdargs << "-o #{self.outfile}"   if self.outfile != nil
+    cmdargs << "-e #{self.errfile}"   if self.errfile != nil
+    cmdargs << "-N #{self.job_name}"  if self.job_name != nil
+    cmdargs << "-cwd"                 if self.cwd == true
+    cmdargs << "-wd #{self.wd}"       if self.wd != nil
+    cmdargs << "-q #{self.queue}"     if self.queue != nil
+    cmdargs << "-pe #{self.pe} #{self.pe_slots}" if (self.pe != nil and self.pe_slots != nil)
 
     # TODO: Implement the rest of the switches as hash keys/options
 
     # we're going to submit a job
-    (status,error) = execio "qsub#{cmdargs}", self.script
+    (status,error) = execio "sudo -u #{self.job_owner} qsub " + cmdargs * " ", self.script
 
     # check status
     if status.class == String and status.match(/^Your job [0-9]+.*submitted$/)
@@ -85,7 +85,8 @@ class RsgeJob
   
   # Gotta be able to delete jobs, too
   def delete
-    (status,error) = execio "qdel #{self.jobid}", nil
+    (status,error) = execio "sudo -u #{self.job_owner} qdel #{self.jobid}", nil
+    Rails.logger.debug "Rsgejob.delete() => " + status.to_s + " " + error.to_s
     if status.class == String and status.match(/^.*job.*#{self.jobid}.*/)
       self.state = "d"
       return 0
@@ -96,26 +97,23 @@ class RsgeJob
   end
 
   private
-  def parse_job_by_id(jobid)
+  def parse_job_by_id(job)
     # We're providing a job and its info
-    jobs = RsgeJobs.new 
-
-    job   = jobs.to_hash[jobid]
 
     if job == nil
       self.valid = false
       return self
     end
 
-    self.jobid        = jobid
-    self.job_owner    = job[:job_owner]
-    self.job_name     = job[:job_name]
-    self.queue        = job[:queue]
-    self.queue_name   = job[:queue_name]
-    self.reservation  = job[:reservation] 
-    self.joinout      = job[:joinout]
-    self.state        = job[:state]
-    self.slots        = job[:slots]
+    self.jobid          = job[:jobid]
+    self.job_owner      = job[:job_owner]
+    self.job_name       = job[:job_name]
+    self.queue          = job[:queue]
+    self.queue_name     = job[:queue_name]
+    self.reservation    = job[:reservation] 
+    self.joinout        = job[:joinout]
+    self.state          = job[:state]
+    self.slots          = job[:slots]
     self.hard_requests  = job[:hard_requests]
     self.soft_requests  = job[:soft_requests]
 
@@ -123,27 +121,5 @@ class RsgeJob
     #self.pe_slots = conf[:pe_slots]      if conf.has_key?(:pe_slots)
     #self.script = conf[:script]        if conf.has_key?(:script)
   end
-
-  # provide the hard resource request list for the current RsgeJob
-  #def hard_request_list
-  #  @jobHr.keys.sort
-  #end 
-
-  # Provide the value of the specific hard resource request for the current RsgeJob
-  # This returns an RsgeReq
-  #def hard_request(cplx)
-  #  @jobHr[cplx]
-  #end 
-   
-  # provide the soft resource request list for the current RsgeJob
-  #def soft_request_list
-  #  @jobSr.keys.sort
-  #end 
-
-  # Provide the value of the specific soft resource request for the current RsgeJob
-  # This returns an RsgeReq
-  #def soft_request(cplx)
-  #  @jobSr[cplx]
-  #end
 
 end
