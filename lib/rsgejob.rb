@@ -75,10 +75,11 @@ class RsgeJob
     # check status
     if status.class == String and status.match(/^Your job [0-9]+.*submitted$/)
       # TODO: :enumerate => :job is still acting funny.  SGE XML is hard to predict
-      parse_job_by_id status.match(/^Your job ([0-9]+).*submitted$/)[1]
+      jobs = RsgeJobs.new self.job_owner
+      parse_job_by_id jobs.to_hash[status.match(/^Your job ([0-9]+).*submitted$/)[1]]
       return 0 
     else
-      raise RuntimeError, "Job submission to SGE failed!"
+      raise RuntimeError, "Job submission to SGE failed! => #{status} #{error}"
       return nil
     end
   end
@@ -86,7 +87,6 @@ class RsgeJob
   # Gotta be able to delete jobs, too
   def delete
     (status,error) = execio "sudo -u #{self.job_owner} qdel #{self.jobid}", nil
-    Rails.logger.debug "Rsgejob.delete() => " + status.to_s + " " + error.to_s
     if status.class == String and status.match(/^.*job.*#{self.jobid}.*/)
       self.state = "d"
       return 0

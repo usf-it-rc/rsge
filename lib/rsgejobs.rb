@@ -5,6 +5,8 @@ require 'rubygems'
 require 'nokogiri'
 require 'rsgejob'
 require 'rsgestring'
+require 'rsgeutil'
+include RsgeUtil
 
 # Provides methods for viewing GridEngine job information
 class RsgeJobs
@@ -12,7 +14,8 @@ class RsgeJobs
     if $rspec_init == true
       doc = Nokogiri::XML(open("sample_data/job_list.xml"))
     else
-      doc = Nokogiri::XML(open("|qstat -r -xml -u #{user} -s a"))
+      (output, error) = RsgeUtil.execio "qstat -r -xml -u #{user} -s a", nil
+      doc = Nokogiri::XML(output)
     end
 
     @@jobs = Hash.new
@@ -61,7 +64,11 @@ class RsgeJobs
   end
 
   def where_id_is(jobid)
-    RsgeJob.new @@jobs[jobid]
+    if @@jobs.has_key?(jobid)
+      RsgeJob.new @@jobs[jobid]
+    else
+      nil
+    end
   end
 
   def each_when_name_is(name)

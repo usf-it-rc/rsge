@@ -16,17 +16,28 @@ module RsgeUtil
             end
         end
     end
-    def execio(cmd, stdin)
+    def execio(cmd, input)
         output = ""
         error  = ""
-        Open3.popen3(cmd){ |i,o,e,t|
-            i.puts stdin
-            i.close
-            output = o.gets
-            o.close
-            error  = e.gets
-            e.close
-        }
+
+        stdin, stdout, stderr, wait_thr = Open3.popen3(cmd, :chdir => "/tmp")
+
+        pid = wait_thr[:pid]
+
+        if input != nil
+          stdin.puts input
+        end
+
+        stdin.close
+
+        stdout.each_line { |line| output += line }
+        stderr.each_line { |line| error += line }
+
+        stdout.close
+        stderr.close
+
+        exit_status = wait_thr.value
+
         return [output,error]
     end
 end
