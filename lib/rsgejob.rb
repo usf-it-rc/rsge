@@ -73,10 +73,10 @@ class RsgeJob
     (status,error) = execio "sudo -u #{self.job_owner} qsub " + cmdargs * " ", self.script
 
     # check status
-    if status.class == String and status.match(/^Your job [0-9]+.*submitted$/)
+    if status.class == String and status.match(/^Your job(\-array)* [0-9]+.*submitted$/)
       # TODO: :enumerate => :job is still acting funny.  SGE XML is hard to predict
       jobs = RsgeJobs.new self.job_owner
-      parse_job_by_id jobs.to_hash[status.match(/^Your job ([0-9]+).*submitted$/)[1]]
+      parse_job_by_id jobs.to_hash[status.match(/^Your job(\-array)* ([0-9]+).*submitted$/)[2]]
       return 0 
     else
       raise RuntimeError, "Job submission to SGE failed! => #{status} #{error}"
