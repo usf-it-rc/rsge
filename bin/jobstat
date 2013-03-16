@@ -12,7 +12,9 @@ if job.valid == false
     exit 0
 end
 
-puts job.jobid + " " + job.job_owner + " " + job.state + " " + job.job_name
+puts job.jobid + " " + job.job_owner + " " + job.state + " " + job.job_name  + " " + job.queue_name
+
+p job.inspect
 
 #job.delete
 #

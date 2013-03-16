@@ -31,18 +31,26 @@ class RsgeHost
             # Given a host, lets parse the output of `qconf -se *hostname*`... we'll need to deal 
             # with pesky multi-lines and line continuation characters
             nextline = nil
+            lastline = false
             str.each_with_index do |line, i|
                 line.chomp!
 
-                line = nextline + line if nextline != nil
+                if nextline != nil and !lastline
+                  line = nextline + line 
+                elsif nextline != nil and lastline
+                  line = nextline
+                end
 
                 if (/[ ]+\\[ ]*$/.match(line))
-                    nextline = line.gsub(/[ ]+\\[ ]*$/,"") if nextline == nil
+                    nextline = line.strip.gsub(/[ ]+\\[ ]*$/,"") if nextline == nil
                     nextline += str[i+1].strip.gsub(/[ ]+\\[ ]*$/,"")
+                    lastline = true if (!/[ ]+\\[ ]*$/.match(str[i+1]))
                     next
                 end
 
                 nextline = nil
+                lastline = false
+                Rails.logger.debug "RsgeHost.new() => " + line
 
                 if line.match(/^complex_values[ ]+.*/)
                     line.gsub!(/complex_values[ ]+/, "")

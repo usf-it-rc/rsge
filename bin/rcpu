@@ -2,8 +2,6 @@
 
 require 'rsgehost'
 
-hosts = RsgeHost.new
+host = RsgeHost.new("wh-520-1-2")
 
-hosts.each do |host|
-    puts host.name + " => " + host.load_value(:num_proc).to_s
-end
+puts host.name + " => " + host.load_value(:num_proc).to_s + " " + host.complex_value(:cpu_type).to_s + " " + host.complex_value(:cpu_model).to_s + " " + host.load_value(:mem_total).to_s

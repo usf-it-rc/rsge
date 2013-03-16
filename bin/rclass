@@ -4,7 +4,7 @@ require 'rsgehost'
 require 'rsgejob'
 require 'rsgequeue'
 
-jobs       = RsgeJobs.new
+jobs       = RsgeJobs.new("\\*")
 gh         = RsgeHost.new("global")
 queues     = RsgeQueue.new
 totalSlots = 0
@@ -29,7 +29,6 @@ shortSlots = 0
 shortAvail = gh.complex_value(:short).to_i
 
 jobs.each do |job|
-
     if (job.state == "r")
         if job.hard_requests.include?(:xlong)
             xlong = xlong+1
