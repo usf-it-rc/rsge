@@ -4,11 +4,12 @@ class Rcqacct
   # This will be a UID from the cwa_allocations table
   def initialize(uid)
     @uid = uid
+    @username = open("|getent passwd #{@uid}").read.chomp.split(":")[0]
   end
 
   # This translates a userid from a database table to a namsid 
   def uname 
-    @username = open("|getent passwd #{@uid}").read.chomp.split(":")[0]
+    return @username
   end
 
   # This will get the actual UID should this class be used oustide
@@ -20,6 +21,12 @@ class Rcqacct
   # Let's get the CPU time reported by SGE for all of eternity 
   def cputime
     @rawtime = open("|qacct -o #{@username} |tail -1").read.chomp.scan(/\S+/)[4].to_i
+    @rawtime = ((@rawtime /= 60) / 60)
+  end
+
+  # Let's get the CPU time reported by SGE for the last 30 days 
+  def cputime30
+    @rawtime = open("|qacct -o #{@username} -d 30 |tail -1").read.chomp.scan(/\S+/)[4].to_i
     @rawtime = ((@rawtime /= 60) / 60)
   end
 
