@@ -7,7 +7,7 @@ $rspec_init = true
 describe RsgeJob do
     before :all do
         @jobs = RsgeJob.new
-        @nonEnumJob = RsgeJob.new({ :enumerate => :job, :jobid => "79644" })
+        @nonEnumJob = RsgeJob.new :jobid => "79644"
     end
     
     it "takes zero or one parameters and returns an RsgeJob object" do

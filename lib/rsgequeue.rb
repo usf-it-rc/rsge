@@ -42,7 +42,8 @@ class RsgeQueue
         if ($rspec_init == true)
             doc = Nokogiri::XML(open("sample_data/queue_status.xml"))
         else
-            doc = Nokogiri::XML(open("|qstat -g c -ext -xml"))
+            (output, error) = RsgeUtil.execio "qstat -g c -ext -xml", nil
+            doc = Nokogiri::XML(output)
         end
 
         @@queues = Hash.new
